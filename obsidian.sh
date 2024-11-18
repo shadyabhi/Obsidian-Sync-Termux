@@ -273,8 +273,13 @@ function sync_obsidian()
     echo "Adding changes..."
     git add .
 
+    n_files=$(git diff --cached --name-only | wc -l)
+    if [[ $n_files != 0 ]]; then
+            files=$(git diff --cached --name-only -z | xargs -0 -n 1 basename | paste -sd "," -)
+    fi
+
     echo "Committing changes..."
-    git commit -m "Android Commit" || echo "No changes to commit"
+    git commit -m "Vault sync: $files" || echo "No changes to commit"
 
     echo "Fetching remote changes..."
     if ! git fetch; then
